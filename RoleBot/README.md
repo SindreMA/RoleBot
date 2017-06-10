@@ -1,5 +1,4 @@
-# Discord.Net Utility Bot
-A utility bot for Discord.Net's support channels.
+# RoleBot
 
 ### Compiling
 This bot requires:
@@ -8,4 +7,6 @@ This bot requires:
 
 ### Contributing
 To develop, you need:
-- Visual Studio 2017
+- Visual Studio 
+
+You need to add your token in config.json
