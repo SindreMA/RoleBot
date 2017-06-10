@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RoleBot": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\Gamtest\\Discord.Net.UtilityBot"
+    }
+  }
+}
