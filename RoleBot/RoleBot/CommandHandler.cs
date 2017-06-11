@@ -52,136 +52,141 @@ namespace UtilityBot
         }
         public void CheckGame()
         {
-            Color myColor = new Color(25, 202, 226);
-            string hex = myColor.R.ToString("X2") + myColor.G.ToString("X2") + myColor.B.ToString("X2");
-
-            foreach (var guild in _client.Guilds)
+             try
             {
-                var roles = guild.Roles;
-                var users = guild.Users;
-                List<Roles> Rooles = new List<DTO.Roles>();
 
-                foreach (var role in guild.Roles)
+                Color myColor = new Color(25, 202, 226);
+                string hex = myColor.R.ToString("X2") + myColor.G.ToString("X2") + myColor.B.ToString("X2");
+
+                foreach (var guild in _client.Guilds)
                 {
-                    Roles roleitem = new Roles();
-                    roleitem.Role = role;
-                    List<IGuildUser> Roleusers = new List<IGuildUser>();
+                    var roles = guild.Roles;
+                    var users = guild.Users;
+                    List<Roles> Rooles = new List<DTO.Roles>();
+
+                    foreach (var role in guild.Roles)
+                    {
+                        Roles roleitem = new Roles();
+                        roleitem.Role = role;
+                        List<IGuildUser> Roleusers = new List<IGuildUser>();
+
+                        foreach (var user in users)
+                        {
+                            bool contains = false;
+                            foreach (var userrole in user.Roles)
+                            {
+                                if (userrole.Id == role.Id)
+                                {
+                                    contains = true;
+                                }
+                            }
+                            if (contains)
+                            {
+                                Roleusers.Add(user);
+                            }
+
+                        }
+                        roleitem.Users = Roleusers;
+                        Rooles.Add(roleitem);
+                    }
+                    foreach (var role in Rooles)
+                    {
+                        if (role.Users.Count == 0)
+                        {
+                            role.Role.DeleteAsync();
+                        }
+                    }
 
                     foreach (var user in users)
                     {
-                        bool contains = false;
-                        foreach (var userrole in user.Roles)
+
+                        bool FoundRoleServer = false;
+
+                        bool FoundRole = false;
+                        foreach (var role in user.Roles)
                         {
-                            if (userrole.Id == role.Id)
-                            {
-                                contains = true;
-                            }
-                        }
-                        if (contains)
-                        {
-                            Roleusers.Add(user);
-                        }
-
-                    }
-                    roleitem.Users = Roleusers;
-                    Rooles.Add(roleitem);
-                }
-                foreach (var role in Rooles)
-                {
-                    if (role.Users.Count == 0)
-                    {
-                        role.Role.DeleteAsync();
-                    }
-                }
-
-                foreach (var user in users)
-                {
-
-                    bool FoundRoleServer = false;
-
-                    bool FoundRole = false;
-                    foreach (var role in user.Roles)
-                    {
-                        if (role.Name == user.Game.ToString())
-                        {
-                            FoundRole = true;
-                            FoundRoleServer = true;
-
-                        }
-
-                        else if (role.Color.RawValue == myColor.RawValue)
-                        {
-                            user.RemoveRoleAsync(role);
-
-                        }
-                    }
-
-                    foreach (var role in roles)
-                    {
-                        if (user.Roles.Contains(role))
-                        {
-
-                        }
-
-
-                        if (!FoundRole)
-                        {
-
-
                             if (role.Name == user.Game.ToString())
                             {
+                                FoundRole = true;
                                 FoundRoleServer = true;
-                                user.AddRoleAsync(role);
+
                             }
-                            else
+
+                            else if (role.Color.RawValue == myColor.RawValue)
                             {
+                                user.RemoveRoleAsync(role);
 
                             }
-
                         }
-                    }
-                    if (user.Game.ToString() != "" && !user.IsBot)
-                    {
-                        if (!FoundRoleServer)
+
+                        foreach (var role in roles)
                         {
-                          
-
-                            var roleperm = new GuildPermissions(
-                                createInstantInvite: false,
-                                sendMessages: false,
-                                readMessageHistory: false,
-                                readMessages: false,
-                                changeNickname: false,
-                                mentionEveryone: false,
-                                useExternalEmojis : false,
-                                addReactions:false,
-                                connect:false,
-                                useVoiceActivation:false,
-                                sendTTSMessages: false, 
-                                attachFiles: false,
-                                embedLinks: false, 
-                                speak: false, 
-                                muteMembers: false, 
-                                manageRoles: false);
-
-
-                            var role = guild.CreateRoleAsync(user.Game.ToString(), roleperm, myColor);
-
-                            var rolepropp = new RoleProperties();
-                            rolepropp.Mentionable = true;
-                            
-                             role.Result.ModifyAsync(x =>
+                            if (user.Roles.Contains(role))
                             {
-                                x.Mentionable = true;
-                            });
-                            
-                            user.AddRoleAsync(role.Result);
+
+                            }
+
+
+                            if (!FoundRole)
+                            {
+
+
+                                if (role.Name == user.Game.ToString())
+                                {
+                                    FoundRoleServer = true;
+                                    user.AddRoleAsync(role);
+                                }
+                                else
+                                {
+
+                                }
+
+                            }
                         }
+                        if (user.Game.ToString() != "" && !user.IsBot)
+                        {
+                            if (!FoundRoleServer)
+                            {
+
+
+                                var roleperm = new GuildPermissions(
+                                    createInstantInvite: false,
+                                    sendMessages: false,
+                                    readMessageHistory: false,
+                                    readMessages: false,
+                                    changeNickname: false,
+                                    mentionEveryone: false,
+                                    useExternalEmojis: false,
+                                    addReactions: false,
+                                    connect: false,
+                                    useVoiceActivation: false,
+                                    sendTTSMessages: false,
+                                    attachFiles: false,
+                                    embedLinks: false,
+                                    speak: false,
+                                    muteMembers: false,
+                                    manageRoles: false);
+
+
+                                var role = guild.CreateRoleAsync(user.Game.ToString(), roleperm, myColor);
+
+                                var rolepropp = new RoleProperties();
+                                rolepropp.Mentionable = true;
+
+                                role.Result.ModifyAsync(x =>
+                                {
+                                    x.Mentionable = true;
+                                });
+
+                                user.AddRoleAsync(role.Result);
+                            }
+                        }
+
+
                     }
-
-
                 }
             }
+            catch (Exception e) { }
         }
 
         public async Task ConfigureAsync()
